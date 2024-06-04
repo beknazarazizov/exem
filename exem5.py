@@ -1,7 +1,19 @@
 #1.	Postgresql bazaga python yordamida ulaning . Product nomli jadval yarating  (id,name,price, color,image) .
-# 1- javob
-
+"""
+import requests
 import psycopg2
+from pprint import pprint
+import time
+import threading
+"""
+
+# 1- javob
+import requests
+import psycopg2
+from pprint import pprint
+import time
+import threading
+
 
 db_name = 'customer'
 password = '5760'
@@ -9,14 +21,14 @@ host = 'localhost'
 port = 5432
 user = 'postgres'
 
-
-conn=psycopg2.connect(dbname = db_name,
-                        password = password,
-                        host = host,
-                        port = port,
-                        user = user)
+#
+# conn=psycopg2.connect(dbname = db_name,
+#                         password = password,
+#                         host = host,
+#                         port = port,
+#                         user = user)
 #id,name,price, color,image
-cur=conn.cursor()
+# cur=conn.cursor()
 
 created_table_query = """ create table if not exists product(
      id serial primary key,
@@ -113,30 +125,78 @@ created_table_query = """ create table if not exists product(
 # thread_numbers.join()
 # thread_letters.join()
 
-
+# 5.	Product nomli class yarating (1 – misoldagi Product ).Product classiga save() nomli object method yarating.
+# Uni vazifasi object attributelari orqali bazaga saqlasin.
 ##5-javob
+
+# class Product:
+#     def __init__(self,name,collor,price,image):
+#         self.name=name
+#         self.collor=collor
+#         self.price=price
+#         self.image=image
+#
+#     def save(self):
+#         # db_name = 'shoping'
+#         # password = '5760'
+#         # host = 'localhost'
+#         # port = 5432
+#         # user = 'postgres'
+#         #
+#         # conn = psycopg2.connect(dbname=db_name,
+#         #                         password=password,
+#         #                         host=host,
+#         #                         port=port,
+#         #                         user=user)
+#
+#         insert_user_query = """ insert into product(name,collor,price,image)
+#                                  values (%s,%s,%s,%s);"""
+#         data_param = self.name, self.collor, self.price, self.image
+#         cur.execute(insert_user_query,data_param)
+#
+#
+#         conn.commit()
+#         conn.close()
+# get_product=Product('iphon','bleack',345,'uhifdjhisljhsbjsl')
+# get_product.save()
+
+
 
 ##6-javob
 
-# import psycopg2
-#
-# class DbConnect:
-#     def init(self, con):
-#         self.con = con
-#
-#     def enter(self):
-#         self.conn = psycopg2.connect(**self.con)
-#         self.cur = self.conn.cursor()
-#         return self.cur
-#
-#     def exit(self, exc_type, exc_value, traceback):
-#         self.conn.commit()
-#         self.cur.close()
-#         self.conn.close()
+db_params={
+'dbname' : 'customer',
+'password' : '5760',
+'host' : 'localhost',
+'port' : 5432,
+'user' : 'postgres'
+}
 
-# with DbConnect(conn)as cur:
-#     cur.execute("SELECT version();")
-#     print(cur.fetchone()[0])
+class DbConnect:
+    def __init__(self,db_params: dict):
+        self.db_params=db_params
+    def __enter__(self):
+        self.conn = psycopg2.connect(**self.db_params)
+
+        return self.conn
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+
+        if self.conn is not None:
+            self.conn.close()
+
+    def commit(self):
+        self.conn.commit()
+
+    def rolbacke(self):
+        self.conn.rollback()
+
+with DbConnect(db_params) as conn:
+    with conn.cursor() as cur:
+        cur.execute("SELECT * FROM product;")
+        rows=cur.fetchall()
+        for rov in rows:
+            print(rov)
 
 ## 7-javob
 
